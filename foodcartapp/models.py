@@ -128,14 +128,17 @@ class Order(models.Model):
     address = models.CharField(
         verbose_name='адрес доставки',
         max_length=200,
-        blank=True),
+        blank=True
+    )
     firstname = models.CharField(
         verbose_name='имя',
-        max_length=200),
+        max_length=200
+    )
     lastname = models.CharField(
         verbose_name='фамилия',
         max_length=200,
-        blank=True),
+        blank=True
+    )
     phonenumber = PhoneNumberField(
         verbose_name='номер телефона',
         blank=True,
@@ -174,5 +177,5 @@ class OrderItem(models.Model):
         ]
 
     def __str__(self):
-        return self.id
+        return f'{self.order.firstname} {self.order.address}'
 
