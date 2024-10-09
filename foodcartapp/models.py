@@ -177,5 +177,5 @@ class OrderItem(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.order.firstname} {self.order.address}'
+        return f'{self.product.name} {self.quantity}'
 

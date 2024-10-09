@@ -1,9 +1,10 @@
-import json
 from pprint import pprint
-
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from django.http import JsonResponse
 from django.templatetags.static import static
-
+from django.shortcuts import get_object_or_404
 
 from .models import Product, Order, OrderItem
 
@@ -60,8 +61,10 @@ def product_list_api(request):
     })
 
 
+@api_view(['POST'])
 def register_order(request):
-    data = json.loads(request.body)
+
+    data = request.data
     pprint(data)
     order = Order.objects.create(
         address=data['address'],
@@ -69,14 +72,22 @@ def register_order(request):
         lastname=data['lastname'],
         phonenumber=data['phonenumber']
     )
-    for ordered_product in data['products']:
-        product = Product.objects.get(id=ordered_product['product'])
-        quantity = ordered_product['quantity']
-        OrderItem.objects.create(
-            order=order,
-            product=product,
-            quantity=quantity
-        )
-
-    return JsonResponse({})
+    try:
+        if data['products'] == []:
+            return Response({'error': 'Не указаны продукты для заказа (пустой список)'}, status=status.HTTP_400_BAD_REQUEST)
+        if not isinstance(data['products'], list):
+            return Response({'error': 'Неверно указаны продукты для заказа'}, status=status.HTTP_400_BAD_REQUEST)
+        for ordered_product in data['products']:
+            product = get_object_or_404(Product, id=ordered_product['product'])
+            quantity = ordered_product['quantity']
+            OrderItem.objects.create(
+                order=order,
+                product=product,
+                quantity=quantity
+            )
+        return Response({'error': 'Заказ сохранен'}, status=status.HTTP_201_CREATED)
+    except KeyError:
+        return Response({'error': 'Не указаны продукты для заказа'}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception:
+        return Response({'error': 'Ошибка при сохранении заказа'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
