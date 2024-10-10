@@ -67,25 +67,34 @@ def register_order(request):
     data = request.data
     pprint(data)
 
+
     try:
+        if data['address'] == None:
+            return Response({'error': 'Поле адрес не может быть пустым'}, status=status.HTTP_400_BAD_REQUEST)
         if not isinstance(data['address'], str):
             return Response({'error': 'Поле адрес должно быть строкой'}, status=status.HTTP_400_BAD_REQUEST)
     except KeyError:
         return Response({'error': 'Поле адрес обязательно к заполнению'}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
+        if data['firstname'] == None:
+            return Response({'error': 'Поле имя не может быть пустым'}, status=status.HTTP_400_BAD_REQUEST)
         if not isinstance(data['firstname'], str):
             return Response({'error': 'Поле имя должно быть строкой'}, status=status.HTTP_400_BAD_REQUEST)
     except KeyError:
         return Response({'error': 'Поле имя обязательно к заполнению'}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
+        if data['lastname'] == None:
+            return Response({'error': 'Поле фамилия не может быть пустым'}, status=status.HTTP_400_BAD_REQUEST)
         if not isinstance(data['lastname'], str):
             return Response({'error': 'Поле фамилия должно быть строкой'}, status=status.HTTP_400_BAD_REQUEST)
     except KeyError:
         return Response({'error': 'Поле фамилия обязательно к заполнению'}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
+        if data['phonenumber'] == '':
+            return Response({'error': 'Поле phonenumber не может быть пустым'}, status=status.HTTP_400_BAD_REQUEST)
         if not isinstance(data['phonenumber'], str):
             return Response({'error': 'Поле телефон должно быть строкой'}, status=status.HTTP_400_BAD_REQUEST)
         phone_pattern = r'^(\+7)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$'
