@@ -6,8 +6,24 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from django.templatetags.static import static
 from django.shortcuts import get_object_or_404
+from rest_framework.serializers import ModelSerializer
 
 from .models import Product, Order, OrderItem
+
+
+class OrderItemSerializer(ModelSerializer):
+
+    class Meta:
+        model = OrderItem
+        fields = ['product', 'quantity']
+
+
+class OrderSerializer(ModelSerializer):
+    products = OrderItemSerializer(many=True, allow_empty=False)
+
+    class Meta:
+        model = Order
+        fields = ['address', 'firstname', 'lastname', 'phonenumber', 'products']
 
 
 def banners_list_api(request):
@@ -64,81 +80,23 @@ def product_list_api(request):
 
 @api_view(['POST'])
 def register_order(request):
-    data = request.data
-    pprint(data)
 
-
-    try:
-        if data['address'] == None:
-            return Response({'error': 'Поле адрес не может быть пустым'}, status=status.HTTP_400_BAD_REQUEST)
-        if not isinstance(data['address'], str):
-            return Response({'error': 'Поле адрес должно быть строкой'}, status=status.HTTP_400_BAD_REQUEST)
-    except KeyError:
-        return Response({'error': 'Поле адрес обязательно к заполнению'}, status=status.HTTP_400_BAD_REQUEST)
-
-    try:
-        if data['firstname'] == None:
-            return Response({'error': 'Поле имя не может быть пустым'}, status=status.HTTP_400_BAD_REQUEST)
-        if not isinstance(data['firstname'], str):
-            return Response({'error': 'Поле имя должно быть строкой'}, status=status.HTTP_400_BAD_REQUEST)
-    except KeyError:
-        return Response({'error': 'Поле имя обязательно к заполнению'}, status=status.HTTP_400_BAD_REQUEST)
-
-    try:
-        if data['lastname'] == None:
-            return Response({'error': 'Поле фамилия не может быть пустым'}, status=status.HTTP_400_BAD_REQUEST)
-        if not isinstance(data['lastname'], str):
-            return Response({'error': 'Поле фамилия должно быть строкой'}, status=status.HTTP_400_BAD_REQUEST)
-    except KeyError:
-        return Response({'error': 'Поле фамилия обязательно к заполнению'}, status=status.HTTP_400_BAD_REQUEST)
-
-    try:
-        if data['phonenumber'] == '':
-            return Response({'error': 'Поле phonenumber не может быть пустым'}, status=status.HTTP_400_BAD_REQUEST)
-        if not isinstance(data['phonenumber'], str):
-            return Response({'error': 'Поле телефон должно быть строкой'}, status=status.HTTP_400_BAD_REQUEST)
-        phone_pattern = r'^(\+7)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$'
-        if not re.match(phone_pattern, data['phonenumber']):
-            return Response({'error': 'Не корректный номер телефона'}, status=status.HTTP_400_BAD_REQUEST)
-    except KeyError:
-        return Response({'error': 'Поле телефон обязательно к заполнению'}, status=status.HTTP_400_BAD_REQUEST)
-
-    try:
-        if data['products'] == []:
-            return Response({'error': 'Не указаны продукты для заказа (пустой список)'}, status=status.HTTP_400_BAD_REQUEST)
-        if not isinstance(data['products'], list):
-            return Response({'error': 'Неверно указаны продукты для заказа'}, status=status.HTTP_400_BAD_REQUEST)
-    except KeyError:
-        return Response({'error': 'Не указаны продукты для заказа'}, status=status.HTTP_400_BAD_REQUEST)
-
-    for ordered_product in data['products']:
-        try:
-            if not isinstance(ordered_product['product'], int):
-                return Response({'error': 'id продукта должен быть целым числом'},status=status.HTTP_400_BAD_REQUEST)
-            try:
-                Product.objects.get(id=ordered_product['product'])
-            except Product.DoesNotExist:
-                return Response({'error': 'Указан не существующий id продукта'},status=status.HTTP_400_BAD_REQUEST)
-        except KeyError:
-            return Response({'error': 'Не указаны продукты для заказа'}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            if not isinstance(ordered_product['quantity'], int):
-                return Response({'error': 'Количество должно быть целым числом'}, status=status.HTTP_400_BAD_REQUEST)
-        except KeyError:
-            return Response({'error': 'Не указано количество продуктов для заказа'}, status=status.HTTP_400_BAD_REQUEST)
+    serializer = OrderSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
 
     order = Order.objects.create(
-        address=data['address'],
-        firstname=data['firstname'],
-        lastname=data['lastname'],
-        phonenumber=data['phonenumber']
+        address=serializer.validated_data['address'],
+        firstname=serializer.validated_data['firstname'],
+        lastname=serializer.validated_data['lastname'],
+        phonenumber=serializer.validated_data['phonenumber']
     )
-    for ordered_product in data['products']:
-        product = get_object_or_404(Product, id=ordered_product['product'])
+    for ordered_product in serializer.validated_data['products']:
+        product = get_object_or_404(Product, id=ordered_product['product'].id)
         quantity = ordered_product['quantity']
         OrderItem.objects.create(
             order=order,
             product=product,
             quantity=quantity
         )
+
     return Response({'error': 'Заказ сохранен'}, status=status.HTTP_201_CREATED)
