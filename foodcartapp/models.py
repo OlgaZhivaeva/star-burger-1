@@ -142,7 +142,8 @@ class Order(models.Model):
     phonenumber = PhoneNumberField(
         verbose_name='номер телефона',
         blank=True,
-        null=True)
+        null=True
+    )
 
     class Meta:
         verbose_name = 'заказ'
@@ -178,4 +179,3 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f'{self.product.name} {self.quantity}'
-

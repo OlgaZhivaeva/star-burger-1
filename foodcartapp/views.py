@@ -1,11 +1,8 @@
-import re
-from pprint import pprint
+from django.http import JsonResponse
+from django.templatetags.static import static
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.http import JsonResponse
-from django.templatetags.static import static
-from django.shortcuts import get_object_or_404
 from rest_framework.serializers import ModelSerializer
 
 from .models import Product, Order, OrderItem
@@ -19,11 +16,23 @@ class OrderItemSerializer(ModelSerializer):
 
 
 class OrderSerializer(ModelSerializer):
-    products = OrderItemSerializer(many=True, allow_empty=False)
+    products = OrderItemSerializer(many=True, allow_empty=False, write_only=True)
 
     class Meta:
         model = Order
-        fields = ['address', 'firstname', 'lastname', 'phonenumber', 'products']
+        fields = ['id', 'address', 'firstname', 'lastname', 'phonenumber', 'products']
+
+    def create(self, validated_data):
+        products = validated_data.pop('products')
+        order = Order.objects.create(**validated_data)
+
+        for product in products:
+            OrderItem.objects.create(
+                order=order,
+                product=product['product'],
+                quantity=product['quantity']
+            )
+        return order
 
 
 def banners_list_api(request):
@@ -80,23 +89,7 @@ def product_list_api(request):
 
 @api_view(['POST'])
 def register_order(request):
-
     serializer = OrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-
-    order = Order.objects.create(
-        address=serializer.validated_data['address'],
-        firstname=serializer.validated_data['firstname'],
-        lastname=serializer.validated_data['lastname'],
-        phonenumber=serializer.validated_data['phonenumber']
-    )
-    for ordered_product in serializer.validated_data['products']:
-        product = get_object_or_404(Product, id=ordered_product['product'].id)
-        quantity = ordered_product['quantity']
-        OrderItem.objects.create(
-            order=order,
-            product=product,
-            quantity=quantity
-        )
-
-    return Response({'error': 'Заказ сохранен'}, status=status.HTTP_201_CREATED)
+    serializer.save()
+    return Response({'order': serializer.data}, status=status.HTTP_201_CREATED)
