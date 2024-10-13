@@ -1,6 +1,25 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
+from django.db.models import F, Sum
+
+
+class OrderQuerySet(models.QuerySet):
+    def calculate_total_cost(self):
+        orders = self.annotate(total_cost=Sum(F('products__product__price') * F('products__quantity')))
+        for order in orders:
+            print(f'{order.id} {order.firstname} {order.lastname} {order.total_cost}')
+        return orders
+
+
+class ProductQuerySet(models.QuerySet):
+    def available(self):
+        products = (
+            RestaurantMenuItem.objects
+            .filter(availability=True)
+            .values_list('product')
+        )
+        return self.filter(pk__in=products)
 
 
 class Restaurant(models.Model):
@@ -25,16 +44,6 @@ class Restaurant(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class ProductQuerySet(models.QuerySet):
-    def available(self):
-        products = (
-            RestaurantMenuItem.objects
-            .filter(availability=True)
-            .values_list('product')
-        )
-        return self.filter(pk__in=products)
 
 
 class ProductCategory(models.Model):
@@ -145,6 +154,8 @@ class Order(models.Model):
         null=True
     )
 
+    objects = OrderQuerySet.as_manager()
+
     class Meta:
         verbose_name = 'заказ'
         verbose_name_plural = 'заказы'
@@ -157,7 +168,7 @@ class OrderItem(models.Model):
     order = models.ForeignKey(
         Order,
         verbose_name='Заказ',
-        related_name='items',
+        related_name='products',
         blank=True,
         on_delete=models.CASCADE
     )
@@ -165,7 +176,7 @@ class OrderItem(models.Model):
     product = models.ForeignKey(
         Product,
         verbose_name='продукт',
-        related_name='items',
+        related_name='products',
         on_delete=models.CASCADE,
     )
     quantity = models.PositiveIntegerField(verbose_name='Количество')
