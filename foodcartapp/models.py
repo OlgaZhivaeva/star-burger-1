@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 from django.db.models import F, Sum
 
@@ -7,8 +8,6 @@ from django.db.models import F, Sum
 class OrderQuerySet(models.QuerySet):
     def calculate_total_cost(self):
         orders = self.annotate(total_cost=Sum(F('products__price') * F('products__quantity')))
-        for order in orders:
-            print(f'{order.id} {order.firstname} {order.lastname} {order.total_cost}')
         return orders
 
 
@@ -163,6 +162,27 @@ class Order(models.Model):
         max_length=11,
         choices=STATUS_CHOICES,
         default='UNPROCESSED',
+        db_index=True
+    )
+    comment = models.TextField(
+        verbose_name='комментарий',
+        blank=True
+    )
+    registered_at = models.DateTimeField(
+        default=timezone.now,
+        verbose_name='время регистрации',
+        db_index=True
+    )
+    called_at = models.DateTimeField(
+        verbose_name='время звонка',
+        blank=True,
+        null=True,
+        db_index=True
+    )
+    delivered_at = models.DateTimeField(
+        verbose_name='время доставки',
+        blank=True,
+        null=True,
         db_index=True
     )
 
