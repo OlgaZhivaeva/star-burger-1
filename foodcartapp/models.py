@@ -6,7 +6,7 @@ from django.db.models import F, Sum
 
 class OrderQuerySet(models.QuerySet):
     def calculate_total_cost(self):
-        orders = self.annotate(total_cost=Sum(F('products__product__price') * F('products__quantity')))
+        orders = self.annotate(total_cost=Sum(F('products__price') * F('products__quantity')))
         for order in orders:
             print(f'{order.id} {order.firstname} {order.lastname} {order.total_cost}')
         return orders
@@ -172,7 +172,6 @@ class OrderItem(models.Model):
         blank=True,
         on_delete=models.CASCADE
     )
-
     product = models.ForeignKey(
         Product,
         verbose_name='продукт',
@@ -180,6 +179,13 @@ class OrderItem(models.Model):
         on_delete=models.CASCADE,
     )
     quantity = models.PositiveIntegerField(verbose_name='Количество')
+    price = models.DecimalField(
+        verbose_name='цена',
+        max_digits=8,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
+        null=False
+    )
 
     class Meta:
         verbose_name = 'элемент заказа'
