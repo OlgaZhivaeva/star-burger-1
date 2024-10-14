@@ -124,7 +124,11 @@ class OrdertAdmin(admin.ModelAdmin):
         'address',
         'firstname',
         'lastname',
-        'phonenumber'
+        'phonenumber',
+        'status'
+    ]
+    list_filter = [
+        'status',
     ]
     inlines = [
         OrderItemInline
