@@ -28,4 +28,5 @@ class OrderSerializer(ModelSerializer):
                 quantity=product['quantity'],
                 price=product['product'].price
             )
+
         return order
