@@ -139,6 +139,10 @@ class Order(models.Model):
         ('DELIVERY', 'Доставка'),
         ('COMPLETED', 'Выполнен'),
     ]
+    PYMENT_CHOICES = [
+        ('CASH', 'Наличностью'),
+        ('ELECTRONIC', 'Электронно')
+    ]
     address = models.CharField(
         verbose_name='адрес доставки',
         max_length=200,
@@ -183,6 +187,12 @@ class Order(models.Model):
         verbose_name='время доставки',
         blank=True,
         null=True,
+        db_index=True
+    )
+    payment_method = models.CharField(
+        max_length=11,
+        choices=PYMENT_CHOICES,
+        blank=True,
         db_index=True
     )
 
