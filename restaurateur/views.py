@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from django import forms
 from django.shortcuts import redirect, render
 from django.views import View
@@ -8,7 +10,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 
 
-from foodcartapp.models import Product, Restaurant, Order
+from foodcartapp.models import Product, Restaurant, Order, RestaurantMenuItem
 
 
 class Login(forms.Form):
@@ -92,7 +94,27 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    orders = Order.objects.calculate_total_cost()
-    return render(request, template_name='order_items.html', context={
-        'order_items': orders,
-    })
+
+    menu_items = RestaurantMenuItem.objects.filter(availability=True,).prefetch_related('restaurant')
+    orders = Order.objects.all().prefetch_related('products')
+
+    for order in orders:
+        all_restaurants = []
+        for order_product in order.products.all():
+            restaurants = []
+            for menu_item in menu_items.filter(product=order_product.product.id):
+                restaurants.append(menu_item.restaurant.name)
+            all_restaurants.append(restaurants)
+
+        # if not all_restaurants:
+        #     order.restaurants_for_cook = 'Не нашлось одного ресторана'
+        # elif not all_restaurants[1:]:
+        #     order.restaurants_for_cook = all_restaurants[0]
+        # else:
+        #     order.restaurants_for_cook = list(set(all_restaurants[0]).intersection(*all_restaurants[1:]))
+        order.restaurants = 'Здесь будут рестораны'
+        print(f'{order.id}\n{order.firstname}\n{order.restaurants}')
+
+    context = {'order_items': Order.objects.calculate_total_cost(),}
+    return render(request, template_name='order_items.html', context=context)
+
