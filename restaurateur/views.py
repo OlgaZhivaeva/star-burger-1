@@ -1,5 +1,3 @@
-from pprint import pprint
-
 from django import forms
 from django.shortcuts import redirect, render
 from django.views import View
@@ -67,8 +65,8 @@ def is_manager(user):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_products(request):
-    restaurants = list(Restaurant.objects.order_by('name'))
-    products = list(Product.objects.prefetch_related('menu_items'))
+    restaurants = Restaurant.objects.order_by('name')
+    products = Product.objects.prefetch_related('menu_items')
 
     products_with_restaurant_availability = []
     for product in products:
@@ -96,7 +94,7 @@ def view_restaurants(request):
 def view_orders(request):
 
     menu_items = RestaurantMenuItem.objects.filter(availability=True,).prefetch_related('restaurant')
-    orders = Order.objects.all().prefetch_related('products')
+    orders = Order.objects.all().prefetch_related('products__product').calculate_total_cost()
 
     for order in orders:
         all_restaurants = []
@@ -106,15 +104,12 @@ def view_orders(request):
                 restaurants.append(menu_item.restaurant.name)
             all_restaurants.append(restaurants)
 
-        # if not all_restaurants:
-        #     order.restaurants_for_cook = 'Не нашлось одного ресторана'
-        # elif not all_restaurants[1:]:
-        #     order.restaurants_for_cook = all_restaurants[0]
-        # else:
-        #     order.restaurants_for_cook = list(set(all_restaurants[0]).intersection(*all_restaurants[1:]))
-        order.restaurants = 'Здесь будут рестораны'
-        print(f'{order.id}\n{order.firstname}\n{order.restaurants}')
+        if not all_restaurants:
+            order.restaurants_for_cook = ['Не нашлось одного ресторана']
+        elif not all_restaurants[1:]:
+            order.restaurants_for_cook = all_restaurants[0]
+        else:
+            order.restaurants_for_cook = set(all_restaurants[0]).intersection(*all_restaurants[1:])
 
-    context = {'order_items': Order.objects.calculate_total_cost(),}
-    return render(request, template_name='order_items.html', context=context)
+    return render(request, template_name='order_items.html', context={'order_items': orders})
 
