@@ -39,14 +39,18 @@
         {% if item.restaurant %}
           <p>Готовит pесторан<br>{{ item.restaurant }}</p>
         {% else %}
-          <details>
-            <summary>Может быть приготовлен ресторанами</summary>
-            <ul>
-              {% for restaurant in item.restaurants_for_cook %}
-                <li>{{ restaurant }}</li>
-              {% endfor %}
-            </ul>
-          </details>
+          {% if not item.distances_to_restaurants %}
+            {{ item.no_restaurant_or_distance }}
+          {% else %}
+            <details>
+              <summary>Может быть приготовлен ресторанами</summary>
+              <ul>
+                {% for restaurant, distance in item.distances_to_restaurants %}
+                  <li>{{ restaurant }}-{{ distance }}</li>
+                {% endfor %}
+              </ul>
+            </details>
+          {% endif %}
         {% endif %}
         </td>
         <td>
