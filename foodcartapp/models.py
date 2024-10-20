@@ -1,8 +1,8 @@
 from django.db import models
+from django.db.models import F, Sum
 from django.core.validators import MinValueValidator
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
-from django.db.models import F, Sum
 
 
 class OrderQuerySet(models.QuerySet):

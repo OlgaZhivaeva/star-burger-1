@@ -5,11 +5,9 @@ from django import forms
 from django.shortcuts import redirect, render
 from django.views import View
 from django.urls import reverse_lazy
-from django.contrib.auth.decorators import user_passes_test
-
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
-
+from django.contrib.auth.decorators import user_passes_test
 
 from foodcartapp.models import Product, Restaurant, Order, RestaurantMenuItem
 from geocoords.models import Geocoords
@@ -127,7 +125,6 @@ def view_orders(request):
                                  lon=address_coords[0],
                                  lat=address_coords[1])
         return address_coords
-
 
     menu_items = RestaurantMenuItem.objects.filter(availability=True,).prefetch_related('restaurant')
     orders = Order.objects.all().prefetch_related('products__product').calculate_total_cost()
