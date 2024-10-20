@@ -114,6 +114,21 @@ def view_orders(request):
         lon, lat = most_relevant['GeoObject']['Point']['pos'].split(" ")
         return lon, lat
 
+    def get_and_or_create_coords(address):
+        if Geocoords.objects.filter(address=address):
+            address_coords = (Geocoords.objects.get(address=address).lon,
+                              Geocoords.objects.get(address=address).lat)
+            return address_coords
+
+        address_coords = fetch_coordinates(API_KEY_GEOCODER, address)
+        if not address_coords:
+            return None
+        Geocoords.objects.create(address=order.address,
+                                 lon=address_coords[0],
+                                 lat=address_coords[1])
+        return address_coords
+
+
     menu_items = RestaurantMenuItem.objects.filter(availability=True,).prefetch_related('restaurant')
     orders = Order.objects.all().prefetch_related('products__product').calculate_total_cost()
 
@@ -135,33 +150,15 @@ def view_orders(request):
 
         distances_to_restaurants = []
         if restaurants_for_cook:
-
             for restaurant in restaurants_for_cook:
                 try:
-                    if Geocoords.objects.filter(address=order.address):
-                        address_coords = (Geocoords.objects.get(address=order.address).lon,
-                                          Geocoords.objects.get(address=order.address).lat)
-                    else:
-                        address_coords = fetch_coordinates(API_KEY_GEOCODER, order.address)
-                        if not address_coords:
-                            order.no_restaurant_or_distance = 'Ошибка определения координат'
-                            break
-                        Geocoords.objects.create(address=order.address,
-                                                 lon=address_coords[0],
-                                                 lat=address_coords[1])
-
+                    address_coords = get_and_or_create_coords(order.address)
                     restaurant_address = Restaurant.objects.get(name=restaurant).address
-                    if Geocoords.objects.filter(address=restaurant_address):
-                        restaurant_coords = (Geocoords.objects.get(address=restaurant_address).lon,
-                                             Geocoords.objects.get(address=restaurant_address).lat)
-                    else:
-                        restaurant_coords = fetch_coordinates(API_KEY_GEOCODER, restaurant_address)
-                        if not restaurant_coords:
-                            order.no_restaurant_or_distance = 'Ошибка определения координат'
-                            break
-                        Geocoords.objects.create(address=restaurant_address,
-                                                 lon=restaurant_coords[0],
-                                                 lat=restaurant_coords[1])
+                    restaurant_coords = get_and_or_create_coords(restaurant_address)
+
+                    if not restaurant_coords and address_coords:
+                        order.no_restaurant_or_distance = 'Ошибка определения координат'
+                        break
 
                     distance_to_restaurant = round(distance(restaurant_coords, address_coords).km, 2)
 
