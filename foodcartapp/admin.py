@@ -9,6 +9,7 @@ from .models import Product, Order, OrderItem
 from .models import ProductCategory
 from .models import Restaurant
 from .models import RestaurantMenuItem
+from geocoords.models import Geocoords
 
 
 class RestaurantMenuItemInline(admin.TabularInline):
@@ -140,3 +141,12 @@ class OrdertAdmin(admin.ModelAdmin):
             return HttpResponseRedirect(request.GET['next'])
         else:
             return res
+
+@admin.register(Geocoords)
+class GeocoordsAdmin(admin.ModelAdmin):
+    list_display = [
+        'address',
+        'lon',
+        'lat',
+        'request_date'
+    ]

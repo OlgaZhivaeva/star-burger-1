@@ -1,4 +1,3 @@
-from pprint import pprint
 from operator import itemgetter
 import requests
 from geopy.distance import distance
@@ -13,7 +12,8 @@ from django.contrib.auth import views as auth_views
 
 
 from foodcartapp.models import Product, Restaurant, Order, RestaurantMenuItem
-from star_burger.settings import API_KEY_GEOKODER
+from geocoords.models import Geocoords
+from star_burger.settings import API_KEY_GEOCODER
 
 
 class Login(forms.Form):
@@ -138,14 +138,33 @@ def view_orders(request):
 
             for restaurant in restaurants_for_cook:
                 try:
-                    address_coords = fetch_coordinates(API_KEY_GEOKODER, order.address)
-                    restaurant_address = Restaurant.objects.get(name=restaurant).address
-                    restaurant_coords = fetch_coordinates(API_KEY_GEOKODER, restaurant_address)
-                    if not address_coords and restaurant_address:
-                        order.no_restaurant_or_distance = 'Ошибка определения координат'
-                        break
+                    if Geocoords.objects.filter(address=order.address):
+                        address_coords = (Geocoords.objects.get(address=order.address).lon,
+                                          Geocoords.objects.get(address=order.address).lat)
                     else:
-                        distance_to_restaurant = round(distance(restaurant_coords, address_coords).km, 2)
+                        address_coords = fetch_coordinates(API_KEY_GEOCODER, order.address)
+                        if not address_coords:
+                            order.no_restaurant_or_distance = 'Ошибка определения координат'
+                            break
+                        Geocoords.objects.create(address=order.address,
+                                                 lon=address_coords[0],
+                                                 lat=address_coords[1])
+
+                    restaurant_address = Restaurant.objects.get(name=restaurant).address
+                    if Geocoords.objects.filter(address=restaurant_address):
+                        restaurant_coords = (Geocoords.objects.get(address=restaurant_address).lon,
+                                             Geocoords.objects.get(address=restaurant_address).lat)
+                    else:
+                        restaurant_coords = fetch_coordinates(API_KEY_GEOCODER, restaurant_address)
+                        if not restaurant_coords:
+                            order.no_restaurant_or_distance = 'Ошибка определения координат'
+                            break
+                        Geocoords.objects.create(address=restaurant_address,
+                                                 lon=restaurant_coords[0],
+                                                 lat=restaurant_coords[1])
+
+                    distance_to_restaurant = round(distance(restaurant_coords, address_coords).km, 2)
+
                 except request.RequestException:
                     order.no_restaurant_or_distance = 'Ошибка определения координат'
                     break
@@ -153,4 +172,3 @@ def view_orders(request):
             order.distances_to_restaurants = sorted(distances_to_restaurants, key=itemgetter(1))
 
     return render(request, template_name='order_items.html', context={'order_items': orders})
-
