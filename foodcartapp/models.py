@@ -191,7 +191,7 @@ class Order(models.Model):
         db_index=True
     )
     payment_method = models.CharField(
-        max_length=11,
+        max_length=15,
         choices=PYMENT_CHOICES,
         blank=True,
         db_index=True
