@@ -140,8 +140,8 @@ class Order(models.Model):
         ('COMPLETED', 'Выполнен'),
     ]
     PYMENT_CHOICES = [
-        ('CASH', 'Наличностью'),
-        ('ELECTRONIC', 'Электронно')
+        ('IN_CASH', 'Наличностью'),
+        ('ELECTRONICLLY', 'Электронно')
     ]
     address = models.CharField(
         verbose_name='адрес доставки',
@@ -163,6 +163,7 @@ class Order(models.Model):
         null=True
     )
     status = models.CharField(
+        verbose_name='статус заказа',
         max_length=11,
         choices=STATUS_CHOICES,
         default='UNPROCESSED',
@@ -173,9 +174,9 @@ class Order(models.Model):
         blank=True
     )
     registered_at = models.DateTimeField(
-        default=timezone.now,
         verbose_name='время регистрации',
-        db_index=True
+        db_index=True,
+        auto_now_add=True
     )
     called_at = models.DateTimeField(
         verbose_name='время звонка',
@@ -228,7 +229,9 @@ class OrderItem(models.Model):
         related_name='products',
         on_delete=models.CASCADE,
     )
-    quantity = models.PositiveIntegerField(verbose_name='Количество')
+    quantity = models.PositiveIntegerField(
+        verbose_name='Количество',
+        validators=[MinValueValidator(1)])
     price = models.DecimalField(
         verbose_name='цена',
         max_digits=8,
