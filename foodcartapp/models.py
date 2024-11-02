@@ -139,7 +139,7 @@ class Order(models.Model):
         ('DELIVERY', 'Доставка'),
         ('COMPLETED', 'Выполнен'),
     ]
-    PАYMENT_CHOICES = [
+    PAYMENT_CHOICES = [
         ('IN_CASH', 'Наличностью'),
         ('ELECTRONICLLY', 'Электронно')
     ]
@@ -192,7 +192,7 @@ class Order(models.Model):
     )
     payment_method = models.CharField(
         max_length=15,
-        choices=PYMENT_CHOICES,
+        choices=PAYMENT_CHOICES,
         blank=True,
         db_index=True
     )
