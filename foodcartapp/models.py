@@ -139,7 +139,7 @@ class Order(models.Model):
         ('DELIVERY', 'Доставка'),
         ('COMPLETED', 'Выполнен'),
     ]
-    PYMENT_CHOICES = [
+    PАYMENT_CHOICES = [
         ('IN_CASH', 'Наличностью'),
         ('ELECTRONICLLY', 'Электронно')
     ]
