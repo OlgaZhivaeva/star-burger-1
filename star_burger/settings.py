@@ -10,9 +10,9 @@ env.read_env()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-API_KEY_GEOCODER = env('API_KEY_GEOCODER')
-
-SECRET_KEY = env('SECRET_KEY')
+API_KEY_GEOCODER = env.str('API_KEY_GEOCODER')
+ROLLBAR_TOKEN = env.str('ROLLBAR_TOKEN')
+SECRET_KEY = env.str('SECRET_KEY')
 DEBUG = env.bool('DEBUG', False)
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['127.0.0.1', 'localhost'])
@@ -128,7 +128,7 @@ STATICFILES_DIRS = [
 ]
 
 ROLLBAR = {
-    'access_token': '7f75ae06febd4324839566ccc18bd747',
+    'access_token': ROLLBAR_TOKEN,
     'environment': 'development',
     'code_version': '1.0',
     'root': BASE_DIR,
