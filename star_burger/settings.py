@@ -12,9 +12,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 API_KEY_GEOCODER = env.str('API_KEY_GEOCODER')
 ROLLBAR_TOKEN = env.str('ROLLBAR_TOKEN')
+ROLLBAR_INVIRONMENT = env.str('ROLLBAR_INVIRONMENT', 'development')
 SECRET_KEY = env.str('SECRET_KEY')
 DEBUG = env.bool('DEBUG', False)
-
+POSTGRES_DB_URL = env.str('POSTGRES_DB_URL', 'postgres://...')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['127.0.0.1', 'localhost'])
 
 INSTALLED_APPS = [
@@ -85,9 +86,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:////{0}'.format(os.path.join(BASE_DIR, 'db.sqlite3'))
-    ),
+    'default': dj_database_url.parse(POSTGRES_DB_URL, conn_max_age=600)
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -129,7 +128,7 @@ STATICFILES_DIRS = [
 
 ROLLBAR = {
     'access_token': ROLLBAR_TOKEN,
-    'environment': 'development',
+    'environment': ROLLBAR_INVIRONMENT,
     'code_version': '1.0',
     'root': BASE_DIR,
 }
