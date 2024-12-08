@@ -21,7 +21,7 @@
 
 Скачайте код:
 ```sh
-git clone https://github.com/devmanorg/star-burger.git
+git clone https://github.com/OlgaZhivaeva/star-burger-1
 ```
 
 Перейдите в каталог проекта:
@@ -55,11 +55,18 @@ pip install -r requirements.txt
 ```
 
 Определите переменные окружения `SECRET_KEY` и `API_KEY_GEOKODER`.
-Получите API ключ Яндекс-геокодера в [кабинете разработчика](https://developer.tech.yandex.ru/services).
+Получите API ключ Яндекс-геокодера в [кабинете разработчика](https://developer.tech.yandex.ru/services)<br>
+Подключите [Rollbar](https://app.rollbar.com) для получения сообщений об ошибках.
+
 Создайте файл `.env` в каталоге `star_burger/` и положите туда такой код:
 ```sh
-SECRET_KEY=django-insecure-0if40nf4nf93n4
-API_KEY_GEOKODER='Ваш API ключ для Яндекс-геокодера'
+SECRET_KEY=Секретный ключ щт вашего проекта Django
+API_KEY_GEOKODER=Ваш API ключ для Яндекс-геокодера
+DEBUG=True/False
+ALLOWED_HOSTS=список хостов
+ROLLBAR_TOKEN=Ваш токен от Rollbar
+ROLLBAR_INVIRONMENT=Название окружения для Rollbar
+POSTGRES_DB_URL=postgres://nameuser:password@127.0.0.1:5432/namedb
 ```
 
 Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
