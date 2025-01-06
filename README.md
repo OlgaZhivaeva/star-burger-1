@@ -64,7 +64,7 @@ SECRET_KEY=Секретный ключ щт вашего проекта Django
 API_KEY_GEOKODER=Ваш API ключ для Яндекс-геокодера
 DEBUG=True/False
 ALLOWED_HOSTS=список хостов
-ROLLBAR_TOKEN=Ваш токен от Rollbar
+ROLLBAR_TOKEN=Ваш токен от Rollbar, по умолчанию пустая строка
 ROLLBAR_INVIRONMENT=Название окружения для Rollbar
 POSTGRES_DB_URL=postgres://nameuser:password@127.0.0.1:5432/namedb
 ```
@@ -158,7 +158,7 @@ Parcel будет следить за файлами в каталоге `bundle
 - `SECRET_KEY` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
 - `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
 - `API_KEY_GEOKODER` - Ваш API ключ для Яндекс-геокодера
-- `ROLLBAR_TOKEN` - Ваш токен от Rollbar
+- `ROLLBAR_TOKEN` - Ваш токен от Rollbar, по умолчанию пустая строка
 - `ROLLBAR_INVIRONMENT` - Название окружения для Rollbar
 - `POSTGRES_DB_URL` - Настройки для базы данных postgres://nameuser:password@127.0.0.1:5432/namedb
 
