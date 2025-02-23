@@ -1,4 +1,4 @@
-version: "3"
+version: "3.9"
 
 services:
   db:
@@ -29,7 +29,7 @@ services:
       DATABASE_URL: ${POSTGRES_DB_URL}
       ALLOWED_HOSTS: ${ALLOWED_HOSTS}
     ports:
-      - 127.0.0.1:8080:8080
+      - 127.0.0.1:8000:8000
     depends_on:
       - db
       - frontend
