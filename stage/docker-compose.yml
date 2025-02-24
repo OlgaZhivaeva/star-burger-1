@@ -16,13 +16,13 @@ services:
   django:
     container_name: django
     build:
-      context: .
+      context: ..
       dockerfile: Dockerfile
     command: bash entrypoint.sh
     volumes:
-      - .:/star-burger
-      - ./media:/star-burger/media
-      - ./static:/star-burger/staticfiles
+      - ..:/star-burger
+      - ../media:/star-burger/media
+      - ../static:/star-burger/staticfiles
     environment:
       SECRET_KEY: ${SECRET_KEY}
       DEBUG: ${DEBUG}
@@ -37,11 +37,11 @@ services:
   frontend:
     container_name: frontend
     build:
-      context: ./frontend
+      context: ../frontend
       dockerfile: Dockerfile
     volumes:
-      - ./frontend/bundles-src/:/frontend/bundles-src/
-      - ./bundles/:/frontend/bundles/
+      - ../frontend/bundles-src/:/frontend/bundles-src/
+      - ../bundles/:/frontend/bundles/
     command: ./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"
 
 volumes:
