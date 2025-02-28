@@ -6,4 +6,3 @@ echo "Start collectstatic..."
 python manage.py collectstatic --noinput &&
 echo "Start server..."
 gunicorn star_burger.wsgi:application --bind 0.0.0.0:8000 --workers 3
-

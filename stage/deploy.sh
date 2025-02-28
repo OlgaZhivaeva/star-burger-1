@@ -1,8 +1,8 @@
 #!/bin/bash
 
-DIRECTORY="/star-burger-1/stage"
+set -e
 
-cd "$DIRECTORY" || { echo "Директория не найдена: $DIRECTORY"; exit 1; }
+cd ~/opt/star-burger-1/stage
 
 echo "Остановка старых контейнеров..."
 docker compose down

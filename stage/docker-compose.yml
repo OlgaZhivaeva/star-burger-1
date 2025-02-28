@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   db:
     container_name: postgres_db
@@ -18,7 +16,7 @@ services:
     build:
       context: ..
       dockerfile: Dockerfile
-    command: bash entrypoint.sh
+    command: bash stage/entrypoint.sh
     volumes:
       - ..:/star-burger
       - ../media:/star-burger/media
@@ -29,7 +27,7 @@ services:
       DATABASE_URL: ${POSTGRES_DB_URL}
       ALLOWED_HOSTS: ${ALLOWED_HOSTS}
     ports:
-      - 127.0.0.1:8000:8000
+      - 8000:8000
     depends_on:
       - db
       - frontend
@@ -49,3 +47,9 @@ volumes:
   staticfiles:
   media:
   frontend:
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1450
