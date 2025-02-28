@@ -9,7 +9,7 @@ git pull origin master
 
 echo "Остановка старых контейнеров..."
 docker compose down
-docker system prune -a --volumes -f
+docker system prune -a --volumes -f   # добавлено из-за нехватки места на сервере
 
 echo "Сборка образов..."
 docker compose build
