@@ -15,14 +15,17 @@ services:
   django:
     container_name: django
     build:
-      context: ..
+      context: ../backend
       dockerfile: Dockerfile
-    command: bash stage/entrypoint.sh
+    command: bash entrypoint_stage.sh
     volumes:
-      - ..:/star-burger
-      - ../media:/star-burger/media
-      - ../static:/star-burger/staticfiles
+      - ../backend:/star-burger/backend
+      - ../backend/media:/star-burger/backend/media
+      - ../backend/static:/star-burger/backend/staticfiles
     environment:
+      API_KEY_GEOCODER: ${API_KEY_GEOCODER}
+      ROLLBAR_TOKEN: ${ROLLBAR_TOKEN}
+      ROLLBAR_INVIRONMENT: ${ROLLBAR_INVIRONMENT}
       SECRET_KEY: ${SECRET_KEY}
       DEBUG: ${DEBUG}
       DATABASE_URL: ${POSTGRES_DB_URL}
@@ -41,7 +44,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ../frontend/bundles-src/:/frontend/bundles-src/
-      - ../bundles/:/frontend/bundles/
+      - ../backend/bundles/:/frontend/bundles/
     command: ./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"
     restart: unless-stopped
 
