@@ -46,7 +46,6 @@ services:
       - ../frontend/bundles-src/:/frontend/bundles-src/
       - ../backend/bundles/:/frontend/bundles/
     command: ./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"
-    restart: unless-stopped
 
 volumes:
   db_data:
