@@ -3,7 +3,7 @@ FROM python:3.11-slim-buster
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR /star-burger/bakend
+WORKDIR /star-burger/baсkend
 
 COPY requirements.txt ./requirements.txt
 
