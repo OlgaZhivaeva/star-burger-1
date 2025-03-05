@@ -21,7 +21,7 @@ services:
     volumes:
       - ../backend:/star-burger/backend
       - ../backend/media:/star-burger/backend/media
-      - ../backend/static:/star-burger/backend/staticfiles
+      - ../backend/staticfiles:/star-burger/backend/staticfiles
     environment:
       API_KEY_GEOCODER: ${API_KEY_GEOCODER}
       ROLLBAR_TOKEN: ${ROLLBAR_TOKEN}
