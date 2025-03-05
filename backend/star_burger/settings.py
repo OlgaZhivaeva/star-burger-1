@@ -9,7 +9,7 @@ env = Env()
 env.read_env()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 API_KEY_GEOCODER = env.str('API_KEY_GEOCODER')
 ROLLBAR_TOKEN = env.str('ROLLBAR_TOKEN', '')
 ROLLBAR_INVIRONMENT = env.str('ROLLBAR_INVIRONMENT', 'development')
@@ -125,13 +125,12 @@ USE_L10N = True
 
 USE_TZ = True
 
-STATIC_URL = '/static/'
-
 INTERNAL_IPS = [
     '127.0.0.1'
 ]
 
-
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "assets"),
     os.path.join(BASE_DIR, "bundles"),
