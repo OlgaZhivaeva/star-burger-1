@@ -8,6 +8,6 @@ RUN npm ci
 
 COPY . .
 
-RUN chown -R node:node /star-burger/frontend/bundles
+RUN chown -R node:node /star-burger/frontend
 
 USER node
