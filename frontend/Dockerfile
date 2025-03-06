@@ -1,7 +1,5 @@
 FROM node:16
 
-RUN useradd -m node
-
 WORKDIR /star-burger/frontend
 
 COPY package*.json ./
