@@ -8,6 +8,4 @@ RUN npm ci
 
 COPY . .
 
-RUN chown -R node:node /star-burger/frontend
-
-USER node
+RUN ./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"
