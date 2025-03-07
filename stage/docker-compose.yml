@@ -11,6 +11,11 @@ services:
     ports:
       - 5432:5432
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   frontend:
     container_name: frontend
@@ -20,8 +25,6 @@ services:
     volumes:
       - ../frontend/bundles-src/:/star-burger/frontend/bundles-src/
       - ../backend/bundles/:/star-burger/frontend/bundles/
-    command: ./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./" \
-             && touch /star-burger/frontend/bundles-ready.flag
 
   django:
     container_name: django
@@ -45,8 +48,10 @@ services:
     ports:
       - 8000:8000
     depends_on:
-      - db
-      - frontend
+      db:
+        condition: service_healthy
+      frontend:
+        condition: service_completed_successfully
     restart: unless-stopped
 
 volumes:
