@@ -2,6 +2,10 @@ echo "Start makemigrations..."
 python manage.py makemigrations --dry-run --check &&
 echo "Start migrate..."
 python manage.py migrate --noinput &&
+while ! nc -z frontend 1234; do
+  echo "Waiting for frontend to be ready..."
+  sleep 1
+done
 echo "Start collectstatic..."
 python manage.py collectstatic --noinput &&
 echo "Start server..."
