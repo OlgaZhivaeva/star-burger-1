@@ -23,8 +23,8 @@ services:
       context: ../frontend
       dockerfile: Dockerfile
     volumes:
-      - ../frontend/bundles-src/:/star-burger/frontend/bundles-src/
-      - ../backend/bundles/:/star-burger/frontend/bundles/
+      - ../frontend/bundles-src:/star-burger/frontend/bundles-src
+      - ../backend/bundles:/star-burger/frontend/bundles
 
   django:
     container_name: django

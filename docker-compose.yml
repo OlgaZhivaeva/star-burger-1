@@ -43,12 +43,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     volumes:
-      - ./frontend/bundles-src/:/frontend/bundles-src/
-      - ./backend/bundles/:/frontend/bundles/
-    command: ./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"
+      - ./frontend/bundles-src:/star-burger/frontend/bundles-src
+      - ./backend/bundles:/star-burger/frontend/bundles
 
 volumes:
   db_data:
-  staticfiles:
-  media:
-  frontend:

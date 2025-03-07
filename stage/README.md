@@ -1,5 +1,6 @@
 # Деплой проекта на сервер
 
+[Ссылка на работающий сайт](http://80.249.146.244/)
 
 Перейдите в директорию `stage`
 ```shell
@@ -40,7 +41,7 @@ $ docker compose up --build
 $ docker exec -it django sh -c "python3 manage.py createsuperuser"
 ```
 
-Для быстрого деплоя запустите скрипт `deploy.sh`
+Для быстрого деплоя запустите скрипт `deploy_star_burger.sh`
 ```shell
-$ ./deploy.sh
+$ ./deploy_star_burger.sh
 ```
