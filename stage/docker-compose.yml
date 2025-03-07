@@ -12,6 +12,16 @@ services:
       - 5432:5432
     restart: unless-stopped
 
+  frontend:
+    container_name: frontend
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ../frontend/bundles-src/:/star-burger/frontend/bundles-src/
+      - ../backend/bundles/:/star-burger/frontend/bundles/
+    command: ./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"
+
   django:
     container_name: django
     build:
@@ -37,16 +47,6 @@ services:
       - db
       - frontend
     restart: unless-stopped
-
-  frontend:
-    container_name: frontend
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
-    volumes:
-      - ../frontend/bundles-src/:/star-burger/frontend/bundles-src/
-      - ../backend/bundles/:/star-burger/frontend/bundles/
-    command: ./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"
 
 volumes:
   db_data:
