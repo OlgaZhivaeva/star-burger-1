@@ -21,6 +21,24 @@ POSTGRES_DB=Имя базы данных
 POSTGRES_DB_URL=postgres://nameuser:password@127.0.0.1:5432/namedb
 ```
 
+Настройте конфиг Nginx
+```
+server {
+    location / {
+      include '/etc/nginx/proxy_params';
+      proxy_pass http://127.0.0.1:8000/;
+    }
+    location /media/ {
+        alias /home/<user>/opt/star-burger-1/backend/media/;
+    }
+    location /static/ {
+        alias /home/<user>/opt/star-burger-1/backend/staticfiles/;
+    }
+    listen 80;
+    server_name <server_IP>;
+}
+```
+
 Для запуска проекта выполните команду
 ```shell
 $ docker compose up
