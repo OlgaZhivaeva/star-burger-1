@@ -2,11 +2,7 @@ echo "Start makemigrations..."
 python manage.py makemigrations --dry-run --check &&
 echo "Start migrate..."
 python manage.py migrate --noinput &&
-while true; do
-  FRONTEND_STATUS=$(docker inspect -f '{{.State.Status}}' frontend)
-  if [ "$FRONTEND_STATUS" = "exited" ]; then
-    break
-  fi
+while [ ! -f /star-burger/frontend/bundles-ready.flag ]; do
   echo "Waiting for frontend to be ready..."
   sleep 1
 done
